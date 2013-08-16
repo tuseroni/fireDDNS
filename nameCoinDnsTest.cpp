@@ -140,13 +140,20 @@ if(n<0)
 {
 error("ERROR writing to socket");
 }
-char buffer[1]={0x00};
+char buffer[255];
+bzero(buffer,255);
 printf("ok got all that stuff\nmoving on\n");
-n = read(sockfd, buffer, 1);
+n = read(sockfd, buffer, 133);
 printf("stuff\n");
-printf("%02X",buffer[0]);
-bzero(buffer,1);
+bzero(buffer,255);
 printf("\n");
+unsigned char verack[24]={0xF9,0xBE,0xB4,0xD9,0x76,0x65,0x72,0x61,0x63,0x6B,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x5D,0xF6,0xE0,0xE2};
+n = write(sockfd,verack,24);
+if(n<0)
+{
+error("ERROR writing to socket");
+}
+n = read(sockfd, buffer, 1);
 return 0;
 close(sockfd);
 for(int i = 0; i<26; i++)
