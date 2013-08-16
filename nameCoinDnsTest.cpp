@@ -58,7 +58,26 @@ int main(int argc, char *argv[])
 {
 unsigned char command[12]={0x76,0x65,0x72,0x73,0x69,0x6F,0x6E,0x00,0x00,0x00,0x00,0x00};
 unsigned char length[4]={0x55,0x00,0x00,0x00};
-
+// unsigned char buff[100];
+// bzero(buff,sizeof(buff));
+// unsigned char shaTest[SHA256_DIGEST_LENGTH];
+// int fdTest=open("../../testFoo2.bin",O_RDONLY);
+// int bytesread=read(fdTest,buff,100);
+// if(bytesread<0)
+// {
+// printf("problem\n");
+// return 0;
+// }
+// printf("first Byte is:%02X\n",buff[0]);
+// int checksumTest=0;
+// // uint256 hashTest=Hash(&buff[0],&buff[99]);
+// // memcpy(&checksumTest,&hashTest,4);
+// SHA256((unsigned char*)&buff,sizeof(buff),(unsigned char*)&shaTest);
+// SHA256((unsigned char*)&shaTest,sizeof(shaTest),(unsigned char*)&shaTest);
+// memcpy(&checksumTest,&shaTest,4);
+// checksumTest=htonl(checksumTest);
+// printf("hash is:%02X\n",checksumTest);
+// return 0;
 
 unsigned char version[4]= {0xB8,0x88,0x00,0x00};
 unsigned char service[8]={0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
@@ -82,12 +101,17 @@ memcpy(&message[46],sourceIP,26);
 memcpy(&message[72],nodeID,8);
 memcpy(&message[80],subVersion,1);
 memcpy(&message[81],lastIndex,4);
-unsigned char sha[20];
-uint256 foo=Hash(message,sha);
+unsigned char sha[SHA256_DIGEST_LENGTH];
+SHA256((unsigned char*)&message,sizeof(message),(unsigned char*)&sha);
+SHA256((unsigned char*)&sha,sizeof(sha),(unsigned char*)&sha);
+//uint256 foo=Hash(&message[0],&message[84]);
 unsigned char checksum[4];
 int check=0;
-memcpy(&check,&foo,4);
-memcpy(&checksum[0],&check,4);
+memcpy(&check,&sha,4);
+//check=htonl(check);
+printf("hash is:%02X\n",check);
+
+memcpy(&checksum,&check,4);
 int sockfd, portno, n;
 sockfd = socket(AF_INET, SOCK_STREAM, 0);
 portno=8334;
